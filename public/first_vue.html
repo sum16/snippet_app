@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
+  <title>自分用コード確認アプリ</title>
+</head>
+
+<body>
+
+
+
+  <div id="app">
+
+
+
+    <p>{{ message }}</p>
+    <p>{{ message2 }}</p>
+    <button @click="changeMsg">Change</button>
+
+    <ul>
+      <li v-for="data in list">{{ data.title }}</li>
+      <button @click="listSnippets">listSnippets</button>
+      <div>
+        <input v-model="title" placeholder="title">
+        <input v-model="language" placeholder="language">
+        <input v-model="contents" placeholder="contents">
+      </div>
+      <button @click="postSnippets">postSnippets</button>
+    </ul>
+
+  </div>
+
+  <script>
+
+    new Vue({
+      el: '#app',
+      data: {
+        message: 'Hello Vue!',
+        message2: 'Hoge',
+        list: [
+          { title: 'hoge' },
+          { title: 'hoge1' },
+        ],
+        title: "new title",
+        language: "Ruby",
+        contents: "contents"
+      },
+
+      methods: {
+        setMsg: function () {
+          this.message = 'Set Message';
+        },
+        changeMsg: function () {
+          this.message = "massageが変化する"
+          axios.get('/snippets.json')
+            .then(response => (
+              this.message2 = response.data[0]['title']
+            ))
+        },
+        listSnippets: function () {
+          axios.get('/snippets.json')
+            .then(response => (
+              this.list = response.data
+            ))
+        },
+        postSnippets: function () {
+          axios.post('/snippets.json', { title: this.title, language: this.language, contents: this.contents })
+            .then(response => (
+              this.listSnippets()
+            )
+            );
+        }
+
+      }
+    })
+  </script>
+
+</body>
+
+</html>
